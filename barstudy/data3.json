@@ -1,0 +1,19 @@
+{
+  "values": [
+    {"category": "2019", "type": "Cats", "value": 0.8},
+    {"category": "2019", "type": "Dogs", "value": 0.6},
+    {"category": "2019", "type": "Parrots", "value": 0.1},
+    {"category": "2020", "type": "Cats", "value": 0.7},
+    {"category": "2020", "type": "Dogs", "value": 0.2},
+    {"category": "2020", "type": "Parrots", "value": 0.3},
+    {"category": "2021", "type": "Cats", "value": 0.5},
+    {"category": "2021", "type": "Dogs", "value": 0.8},
+    {"category": "2021", "type": "Parrots", "value": 0.1},
+    {"category": "2022", "type": "Cats", "value": 0.6},
+    {"category": "2022", "type": "Dogs", "value": 0.9},
+    {"category": "2022", "type": "Parrots", "value": 0.3},
+    {"category": "2023", "type": "Cats", "value": 0.5},
+    {"category": "2023", "type": "Dogs", "value": 0.1},
+    {"category": "2024", "type": "Parrots", "value": 0.4}
+  ]
+}

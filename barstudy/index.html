@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <script src="grouped_bars.js"></script>
+  <script src="stacked_bars.js"></script>
+  <script src="visunit.js"></script>
+
+</head>
+<body>
+  <div id="vis"/>
+  <div id="json-data"></div>
+  <script>
+
+
+    function loadMultipleJsons(files, whendone){
+
+      let rec = (loadedData, files, whendone) => {
+        if (files.length == 0) whendone(loadedData);
+        else
+          $.getJSON(files[0], data => {
+            console.log(data);
+            loadedData.unshift(data);
+            files.splice(0,1);
+            rec(loadedData, files, whendone);
+          }).fail(function() {
+            $('#json-data').html('Error loading JSON data.');
+          });
+        return loadedData;
+        }
+      rec([], files, whendone);
+    }
+
+    // Your jQuery code to load the JSON file
+    $(document).ready(function() {
+
+
+      loadMultipleJsons(["data1.json",
+        "data2.json",
+        "data3.json"],
+              data => {
+
+        data.map( (d,i) => d.name = "d" + i);
+
+        let visUnit = new VisUnit();
+
+        let g = new groupedBars();
+        let s = new stackedBars();
+
+        let task1 = ({
+          name : "Highest individual",
+          question: "What year saw the highest number of $0?",
+         // description: "",
+          inputs : [ {type : ["in_text"]}],
+          outputs : [ {type : "select", options : ["select","2019","2020","2021","2022","2023"]}],
+          instances : [
+            { data : data[0],
+              instances : [{ inputs : ["cats"], accuracy : outputs => 1},
+                           { inputs : ["parrots"], accuracy : outputs => 1}]},
+            { data : data[1],
+              instances : [{ inputs : ["dogs"], accuracy : outputs => 1},
+                           { inputs : ["cats"], accuracy : outputs => 1}]},
+            { data : data[2],
+              instances : [{ inputs : ["parrots"], accuracy : outputs => 1},
+                           { inputs : ["dogs"], accuracy : outputs => 1}]}
+          ]
+        });
+
+        let task2 = {
+                  name : "Highest total",
+                  question: "What year saw the highest total number of pets?",
+                //  description: "",
+                  inputs : [],
+                  outputs : [ {type : "select", options : ["select","2019","2020","2021","2022","2023"]}],
+                  instances : [
+                    { data : data[0],
+                      instances : [{ inputs : [], accuracy : outputs => 1},
+                                   { inputs : [], accuracy : outputs => 1}]},
+                    { data : data[1],
+                      instances : [{ inputs : [], accuracy : outputs => 1},
+                                   { inputs : [], accuracy : outputs => 1}]},
+                    { data : data[2],
+                      instances : [{ inputs : [], accuracy : outputs => 1},
+                                   { inputs : [], accuracy : outputs => 1}]}
+                  ]
+                };
+
+        let studySpec = ({
+          viewers : {
+            which : [g,s],
+            how : "within" // choose in form below: betweeen, within, counterbalanced
+          },
+          datasets : {
+            which : data,
+            how : "within" // choose in form below: betweeen, within, counterbalanced
+          },
+          tasks : {
+            which :  [task1,task2],
+            how : "within" // choose in form below: betweeen, within, counterbalanced
+          },
+          blocking : "vtd", // choose in form below: viewer->task->dataset | viewer -> dataset -> task | ..
+
+          block_tasks : [
+            visUnit.tasks.showHTML("This is a very simple VisUnit demo study comparing bar charts and stacked bar charts.")
+                    .showBefore("study"),
+            visUnit.tasks.showHTML("This ends the study. Thank you for participating!")
+                          .showAfter("study").exit()
+          ]
+        });
+
+        let study = visUnit.createStudySchedules(studySpec);
+        visUnit.startStudy(document.getElementById("vis"), study[0]);
+
+
+      })
+    });
+
+  </script>
+</body>
+</html>
